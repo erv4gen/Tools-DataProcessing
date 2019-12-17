@@ -1,4 +1,4 @@
 pandas
-multiprocessing
-pickle
 numpy
+pandas_datareader
+arch
