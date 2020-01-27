@@ -1,59 +1,16 @@
-import sys , time , traceback , itertools , warnings  , uuid , os
-import datetime as dt
-
-from tqdm import tqdm
+import warnings 
 
 import pandas as pd
-import pandas_datareader.data as web
-import numpy as np
 
-import statsmodels.formula.api as smf
 import statsmodels.tsa.api as smt
 import statsmodels.api as sm
-from statsmodels.tsa.stattools import adfuller
+
 import scipy.stats as scs
-from arch import arch_model
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 warnings.filterwarnings('ignore')
-
-adj_close = 'adj_close'
-def get_market_ts(date,ticker,data_source):
-    if data_source=='web':
-        start = '2000-01-01'
-        end = date
-
-        get_px = lambda x: web.DataReader(x, 'yahoo', start=start, end=end)
-
-        # symbols = ['SPY','TLT','MSFT']
-        # # raw adjusted close prices
-        # data = pd.DataFrame({sym:get_px(sym)['Adj Close'] for sym in symbols})
-
-        ticker_data = get_px(ticker)
-        
-        ticker_data = ticker_data.dropna()
-        ticker_data = ticker_data.rename({'Adj Close':adj_close},axis=1)
-        ticker_data.columns = [x.lower() for x in ticker_data.columns]
-        
-        ticker_data['volatility'] = calc_volatility(ticker_data)
-
-        ticker_data['return'] = 100* ticker_data[adj_close].pct_change()
-
-    else:
-        pass
-            #ticker_data = get_px(ticker)
-        # log returns
-        #lrets = np.log(ticker_data['Adj Close']/ticker_data['Adj Close'].shift(1)).dropna()
-        
-    return ticker_data
-
-def calc_volatility(ticker_data):
-    '''This volatility is different from VIX volatility and track only the price candle size'''
-    
-    return 100*(ticker_data.high - ticker_data.low)/ticker_data[adj_close]
-
 
 def tsplot(y, lags=None, figsize=(8, 6), style='ggplot',title='Time Series Analysis Plots'):
     if not isinstance(y, pd.Series):
